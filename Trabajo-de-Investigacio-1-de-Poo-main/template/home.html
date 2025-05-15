@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}BancoNómina - Sistema de Gestión{% endblock %}</title>
+  <!-- Bootstrap CSS -->
+  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="{% static 'css/home.css' %}" rel="stylesheet">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+ <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'home' %}">
+      <i class="fas fa-landmark me-2"></i>
+      Banco<span class="fw-bold text-accent">Nómina</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'home' %}"><i class="fas fa-home me-1"></i> Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'core:list_nomina' 'departamento' %}"><i class="fas fa-building me-1"></i> Departamentos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'core:list_nomina' 'cargo' %}"><i class="fas fa-briefcase me-1"></i> Cargos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'core:list_nomina' 'tipocontrato' %}"><i class="fas fa-file-contract me-1"></i> Tipos de Contrato</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'core:list_nomina' 'empleado' %}"><i class="fas fa-users me-1"></i> Empleados</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'core:list_nomina' 'rol' %}"><i class="fas fa-users me-1"></i> Rol</a>
+        </li>
+      </ul>
+      <div class="d-flex">
+        {% if user.is_authenticated %}
+          <div class="dropdown">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle me-1"></i> {{ user.username }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              {% if user.is_staff %}
+                <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fas fa-tools me-2"></i> Admin</a></li>
+              {% endif %}
+              <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i> Perfil</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'core:logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</a></li>
+            </ul>
+          </div>
+        {% else %}
+          <a href="{% url 'core:login' %}" class="btn btn-outline-light me-2"><i class="fas fa-sign-in-alt me-1"></i> Iniciar Sesión</a>
+          <a href="{% url 'core:signup' %}" class="btn btn-accent"><i class="fas fa-user-plus me-1"></i> Registrarse</a>
+        {% endif %}
+      </div>
+      
+    </div>
+  </div>
+</nav>
+
+  <!-- Content Section -->
+  {% block content %}
+  <!-- Hero Section -->
+  {% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+  <section class="hero">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h1 class="display-4 fw-bold mb-4">Sistema de Gestión de Nómina Bancaria</h1>
+          <p class="lead mb-4">Administre de manera eficiente la nómina de su institución financiera con nuestro sistema integral de gestión de recursos humanos.</p>
+          <div class="d-flex flex-wrap">
+            <a href="#" class="btn btn-accent btn-lg me-3 mb-2"><i class="fas fa-play-circle me-2"></i>Comenzar ahora</a>
+            <a href="#" class="btn btn-outline-secondary btn-lg mb-2"><i class="fas fa-info-circle me-2"></i>Más información</a>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <img src="{% static 'img/portada.png' %}" alt="Sistema de Nómina" class="hero-img img-fluid">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Statistics Section -->
+  <section class="stats py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 col-6 mb-4 mb-md-0">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="stats-number">3,500+</h3>
+            <p class="stats-text">Empleados gestionados</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4 mb-md-0">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-building"></i>
+            </div>
+            <h3 class="stats-number">25+</h3>
+            <p class="stats-text">Departamentos</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-money-check-alt"></i>
+            </div>
+            <h3 class="stats-number">98%</h3>
+            <p class="stats-text">Precisión en pagos</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-6">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <h3 class="stats-number">75%</h3>
+            <p class="stats-text">Ahorro de tiempo</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features py-5">
+    <div class="container">
+      <div class="row justify-content-center text-center mb-5">
+        <div class="col-lg-6">
+          <h2 class="fw-bold mb-3">Características Principales</h2>
+          <p class="text-muted">Optimice la gestión de nómina con nuestras herramientas especializadas para el sector financiero.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fas fa-user-tie"></i>
+            </div>
+            <h4 class="feature-title">Gestión de Empleados</h4>
+            <p>Administre información completa de empleados, incluyendo datos personales, profesionales y bancarios.</p>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fas fa-sitemap"></i>
+            </div>
+            <h4 class="feature-title">Estructura Organizacional</h4>
+            <p>Defina departamentos, cargos y jerarquías para mantener una organización clara y eficiente.</p>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fas fa-file-signature"></i>
+            </div>
+            <h4 class="feature-title">Gestión de Contratos</h4>
+            <p>Diferentes tipos de contratos con condiciones específicas para cada cargo o posición.</p>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fas fa-calculator"></i>
+            </div>
+            <h4 class="feature-title">Cálculo Automático</h4>
+            <p>Cálculo preciso de sueldos, bonos, horas extras, deducciones y aportes al IESS.</p>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h4 class="feature-title">Reportes y Análisis</h4>
+            <p>Generación de reportes detallados para análisis financiero y planificación estratégica.</p>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="feature-box">
+            <div class="feature-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h4 class="feature-title">Seguridad Avanzada</h4>
+            <p>Protección de datos sensibles con sistema de permisos y autenticación robusta.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Workflow Section -->
+  <section class="workflow py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
+          <h2 class="fw-bold mb-4">Flujo de Trabajo Optimizado</h2>
+          <p class="mb-4">Nuestro sistema de nómina está diseñado para simplificar procesos y reducir errores en cada etapa del ciclo de pagos.</p>
+          <div class="d-flex mb-3">
+            <div class="me-3 text-accent">
+              <i class="fas fa-check-circle fa-2x"></i>
+            </div>
+            <div>
+              <h5>Captura de información precisa</h5>
+              <p class="text-muted">Formularios intuitivos para el registro y actualización de datos.</p>
+            </div>
+          </div>
+          <div class="d-flex mb-3">
+            <div class="me-3 text-accent">
+              <i class="fas fa-check-circle fa-2x"></i>
+            </div>
+            <div>
+              <h5>Procesamiento automático</h5>
+              <p class="text-muted">Cálculos precisos según las políticas de la institución y normativas legales.</p>
+            </div>
+          </div>
+          <div class="d-flex">
+            <div class="me-3 text-accent">
+              <i class="fas fa-check-circle fa-2x"></i>
+            </div>
+            <div>
+              <h5>Distribución y archivo</h5>
+              <p class="text-muted">Generación de comprobantes y almacenamiento seguro de la información.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 order-lg-1">
+          <img src="/api/placeholder/600/450" alt="Workflow" class="img-fluid rounded shadow">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials py-5">
+    <div class="container">
+      <div class="row justify-content-center text-center mb-5">
+        <div class="col-lg-6">
+          <h2 class="fw-bold mb-3">Opiniones de Nuestros Clientes</h2>
+          <p class="text-muted">Instituciones financieras que confían en nuestro sistema para la gestión de su nómina.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="testimonial">
+            <div class="d-flex align-items-center mb-3">
+              <img src="/api/placeholder/70/70" alt="Cliente" class="testimonial-img">
+              <div>
+                <h5 class="testimonial-author">Cristina Vásquez</h5>
+                <p class="testimonial-position">Directora de RRHH</p>
+              </div>
+            </div>
+            <p class="mb-0">"La implementación del sistema ha mejorado significativamente nuestra productividad. El cálculo automático de deducciones y aportes ha reducido errores en un 95%."</p>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="testimonial">
+            <div class="d-flex align-items-center mb-3">
+              <img src="/api/placeholder/70/70" alt="Cliente" class="testimonial-img">
+              <div>
+                <h5 class="testimonial-author">Roberto Mendoza</h5>
+                <p class="testimonial-position">Gerente Financiero</p>
+              </div>
+            </div>
+            <p class="mb-0">"La integración con nuestros sistemas existentes fue sencilla. Ahora podemos generar reportes detallados que nos ayudan a tomar mejores decisiones financieras."</p>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="testimonial">
+            <div class="d-flex align-items-center mb-3">
+              <img src="/api/placeholder/70/70" alt="Cliente" class="testimonial-img">
+              <div>
+                <h5 class="testimonial-author">María Estévez</h5>
+                <p class="testimonial-position">Analista de Nómina</p>
+              </div>
+            </div>
+            <p class="mb-0">"La facilidad de uso y la interfaz intuitiva han reducido el tiempo dedicado a procesar la nómina mensual. El soporte técnico es excepcional y siempre disponible."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section class="pricing py-5">
+    <div class="container">
+      <div class="row justify-content-center text-center mb-5">
+        <div class="col-lg-6">
+          <h2 class="fw-bold mb-3">Planes Adaptados a su Institución</h2>
+          <p class="text-muted">Elija el plan que mejor se adapte al tamaño y necesidades de su entidad financiera.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="card h-100 border-0 shadow">
+            <div class="card-body text-center p-5">
+              <h5 class="text-uppercase text-muted mb-3">Básico</h5>
+              <h2 class="display-4 fw-bold mb-3">$299</h2>
+              <p class="text-muted mb-4">por mes</p>
+              <ul class="list-unstyled mb-4">
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Hasta 50 empleados</li>
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Gestión de departamentos</li>
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Gestión de contratos</li>
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Cálculo automático</li>
+                <li class="mb-3 text-muted"><i class="fas fa-times me-2"></i> Reportes avanzados</li>
+                <li class="mb-3 text-muted"><i class="fas fa-times me-2"></i> APIs de integración</li>
+              </ul>
+              <a href="#" class="btn btn-outline-primary w-100">Seleccionar plan</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="card h-100 border-0 shadow accent-border" style="transform: scale(1.05);">
+            <div class="card-body text-center p-5">
+              <div class="ribbon">Recomendado</div>
+              <h5 class="text-uppercase text-muted mb-3">Profesional</h5>
+              <h2 class="display-4 fw-bold mb-3">$599</h2>
+              <p class="text-muted mb-4">por mes</p>
+              <ul class="list-unstyled mb-4">
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Hasta 200 empleados</li>
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Gestión de departamentos</li>
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Gestión de contratos</li>
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Cálculo automático</li>
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Reportes avanzados</li>
+                <li class="mb-3 text-muted"><i class="fas fa-times me-2"></i> APIs de integración</li>
+              </ul>
+              <a href="#" class="btn btn-accent w-100">Seleccionar plan</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="card h-100 border-0 shadow">
+            <div class="card-body text-center p-5">
+              <h5 class="text-uppercase text-muted mb-3">Empresarial</h5>
+              <h2 class="display-4 fw-bold mb-3">$999</h2>
+              <p class="text-muted mb-4">por mes</p>
+              <ul class="list-unstyled mb-4">
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Empleados ilimitados</li>
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Gestión de departamentos</li>
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Gestión de contratos</li>
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Cálculo automático</li>
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> Reportes avanzados</li>
+                <li class="mb-3"><i class="fas fa-check text-accent me-2"></i> APIs de integración</li>
+              </ul>
+              <a href="#" class="btn btn-outline-primary w-100">Seleccionar plan</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endblock content %}
+
+  <!-- Footer Section -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 mb-4 mb-lg-0">
+          <h5 class="footer-heading">Sobre BancoNómina</h5>
+          <p class="text-light-muted">Sistema de gestión de nómina avanzado diseñado específicamente para el sector financiero, ofreciendo soluciones integrales para la administración de recursos humanos.</p>
+          <div class="social-icons">
+            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+          <h5 class="footer-heading">Enlaces</h5>
+          <ul class="footer-links">
+            <li><a href="#" class="footer-link">Inicio</a></li>
+            <li><a href="#" class="footer-link">Características</a></li>
+            <li><a href="#" class="footer-link">Precios</a></li>
+            <li><a href="#" class="footer-link">Contacto</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+          <h5 class="footer-heading">Soporte</h5>
+          <ul class="footer-links">
+            <li><a href="#" class="footer-link">Ayuda</a></li>
+            <li><a href="#" class="footer-link">FAQ</a></li>
+            <li><a href="#" class="footer-link">Documentación</a></li>
+            <li><a href="#" class="footer-link">Tutoriales</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4 col-md-4">
+          <h5 class="footer-heading">Contacto</h5>
+          <ul class="footer-contact">
+            <li><i class="fas fa-map-marker-alt me-2"></i> Av. Principal 123, Ciudad Financiera</li>
+            <li><i class="fas fa-phone me-2"></i> +593 99 123 4567</li>
+            <li><i class="fas fa-envelope me-2"></i> info@banconomina.com</li>
+          </ul>
+          <form class="footer-form mt-3">
+            <div class="input-group">
+              <input type="email" class="form-control" placeholder="Correo electrónico" aria-label="Correo electrónico">
+              <button class="btn btn-accent" type="button">Suscribirse</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="copyright text-center mt-4">
+        <p>&copy; 2025 BancoNómina. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to top button -->
+  <a href="#" class="back-to-top" aria-label="Volver arriba"><i class="fas fa-chevron-up"></i></a>
+
+  <!-- Bootstrap JS -->
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

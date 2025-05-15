@@ -1,0 +1,121 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block title %}Registro - BancoNómina{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+  <h2 class="mb-4">Crear cuenta</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="mb-3">
+      {{ form.username.label_tag }}
+      {{ form.username }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.email.label_tag }}
+      {{ form.email }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.password1.label_tag }}
+      <div class="input-group">
+        {{ form.password1 }}
+        <span class="input-group-text bg-white border-start-0">
+          <i class="fa-solid fa-eye" id="togglePassword1" style="cursor: pointer;"></i>
+        </span>
+      </div>
+      <small class="form-text text-danger" id="pw1_error"></small>
+    </div>
+
+    <div class="mb-3">
+      {{ form.password2.label_tag }}
+      <div class="input-group">
+        {{ form.password2 }}
+        <span class="input-group-text bg-white border-start-0">
+          <i class="fa-solid fa-eye" id="togglePassword2" style="cursor: pointer;"></i>
+        </span>
+      </div>
+    </div>
+
+    <div class="form-check mb-3">
+      {{ form.is_staff }}
+      {{ form.is_staff.label_tag }}
+    </div>
+
+    <div class="mb-3" id="secret_wrapper">
+      {{ form.admin_secret.label_tag }}
+      {{ form.admin_secret }}
+    </div>
+
+    <button type="submit" class="btn btn-success">Registrarse</button>
+    <a href="{% url 'core:login' %}" class="btn btn-link">¿Ya tienes cuenta? Inicia sesión</a>
+    <link href="{% static 'css/formulario.css' %}" rel="stylesheet">
+  </form>
+</div>
+
+<script>
+function togglePassword(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  if (input.type === "password") {
+    input.type = "text";
+    icon.classList.remove("fa-eye");
+    icon.classList.add("fa-eye-slash");
+  } else {
+    input.type = "password";
+    icon.classList.remove("fa-eye-slash");
+    icon.classList.add("fa-eye");
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const pw1 = document.getElementById('id_password1');
+  const error = document.getElementById('pw1_error');
+
+  if (pw1) {
+    pw1.addEventListener('input', function () {
+      const value = pw1.value;
+      const minLength = value.length >= 8;
+      const hasUpper = /[A-Z]/.test(value);
+      const hasNumber = /\d/.test(value);
+
+      if (!minLength || !hasUpper || !hasNumber) {
+        error.textContent = "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.";
+      } else {
+        error.textContent = "";
+      }
+    });
+  }
+
+  const isStaff = document.getElementById('id_is_staff');
+  const secretWrapper = document.getElementById('secret_wrapper');
+  if (isStaff && secretWrapper) {
+    isStaff.addEventListener('change', () => {
+      secretWrapper.style.display = isStaff.checked ? 'block' : 'none';
+    });
+    secretWrapper.style.display = isStaff.checked ? 'block' : 'none';
+  }
+
+  document.getElementById("togglePassword1").addEventListener("click", function () {
+    togglePassword("id_password1", "togglePassword1");
+  });
+
+  document.getElementById("togglePassword2").addEventListener("click", function () {
+    togglePassword("id_password2", "togglePassword2");
+  });
+});
+</script>
+{% endblock %}

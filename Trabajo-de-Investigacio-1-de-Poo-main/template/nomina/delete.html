@@ -1,0 +1,18 @@
+{% extends "home.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2>{{ title }}</h2>
+  <p class="text-danger">¿Estás seguro de que deseas eliminar este registro?</p>
+  <p><strong>{{ object }}</strong></p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'core:list_nomina' model_name %}" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+{% endblock %}
